@@ -18,7 +18,7 @@ services:
       - rapidodevis-network
     restart: unless-stopped
 
-  # PgAdmin - Interface web PostgreSQL (optionnel)
+  # PgAdmin - Interface web PostgreSQL
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: rapidodevis-pgadmin
@@ -32,6 +32,25 @@ services:
       - rapidodevis-network
     depends_on:
       - postgres
+
+  # Metabase - Dashboards BI
+  metabase:
+    image: metabase/metabase:latest
+    container_name: rapidodevis-metabase
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: rapido
+      MB_DB_PASS: SecurePass2025!
+      MB_DB_HOST: postgres
+    ports:
+      - "3000:3000"
+    networks:
+      - rapidodevis-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
 networks:
   rapidodevis-network:
