@@ -233,11 +233,20 @@ class WordPressConnector:
         
         stats = {}
         
-        response = self.session.get(f"{self.wc_api_base}/reports/sales")
-        if response.status_code == 200:
-            sales_data = response.json()
-            stats['ca_total'] = float(sales_data.get('total_sales', 0))
-            stats['nb_commandes'] = int(sales_data.get('total_orders', 0))
+        try:
+            response = self.session.get(f"{self.wc_api_base}/reports/sales")
+            if response.status_code == 200:
+                sales_data = response.json()
+                
+                # L'API peut retourner une liste ou un dict
+                if isinstance(sales_data, list) and len(sales_data) > 0:
+                    sales_data = sales_data[0]
+                
+                if isinstance(sales_data, dict):
+                    stats['ca_total'] = float(sales_data.get('total_sales', 0))
+                    stats['nb_commandes'] = int(sales_data.get('total_orders', 0))
+        except Exception as e:
+            print(f"⚠️  Erreur récupération stats: {e}")
         
         return stats
     
